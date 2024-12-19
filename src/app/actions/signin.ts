@@ -13,6 +13,8 @@ export const doSignIn = async (formData: FormData) => {
       redirect: false,
     });
 
+    console.log(response);
+
     return response;
   } catch (error: any) {
     return { error: error.message };

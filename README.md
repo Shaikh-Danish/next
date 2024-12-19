@@ -1,48 +1,194 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with
-[`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Authentication Template with Bun
+
+A modern authentication template built with Next.js, Bun, and NextAuth.js. This
+template provides a solid foundation for implementing username/password
+authentication in your Next.js applications.
+
+## Features
+
+- Fast development environment powered by Bun
+- Username and password authentication using NextAuth.js
+- Secure session management
+- Protected API routes
+- Responsive authentication pages
+- TypeScript support
+- Environment variable configuration
+- Docker support
+
+## Prerequisites
+
+Before you begin, ensure you have Bun installed on your system. Here's how to
+install Bun on different platforms:
+
+### macOS or Linux
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Windows
+
+Install Windows Subsystem for Linux (WSL) first, then run:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Using npm (Alternative method)
+
+```bash
+npm install -g bun
+```
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/yourusername/nextjs-auth-template.git
+cd nextjs-auth-template
+```
+
+2. Install dependencies:
+
+```bash
+bun install
+```
+
+3. Create a `.env.local` file in the root directory:
+
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key # Generate using: openssl rand -base64 32
+DATABASE_URL="your-database-url"
+```
+
+4. Initialize the database (if using Prisma):
+
+```bash
+bunx prisma generate
+bunx prisma db push
+```
+
+5. Start the development server:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the
-result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page
-auto-updates as you edit the file.
+```
+├── app/
+│   ├── api/
+│   │   └── auth/
+│   │       └── [...nextauth]/
+│   ├── auth/
+│   │   ├── signin/
+│   │   └── signup/
+│   └── layout.tsx
+├── components/
+│   ├── auth/
+│   └── ui/
+├── lib/
+│   └── auth.ts
+├── prisma/
+│   └── schema.prisma
+└── types/
+    └── next-auth.d.ts
+```
 
-This project uses
-[`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to
-automatically optimize and load Inter, a custom Google Font.
+## Authentication Configuration
 
-## Learn More
+The template uses NextAuth.js with a custom credentials provider. Configure your
+authentication settings in `app/api/auth/[...nextauth]/route.ts`:
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+const handler = NextAuth({
+  providers: [
+    CredentialsProvider({
+      // Your credentials configuration
+    }),
+  ],
+  // Additional configuration
+});
 
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js/) - your
-feedback and contributions are welcome!
+export { handler as GET, handler as POST };
+```
 
-## Deploy on Vercel
+## Protecting Routes
 
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
+To protect a route, use the middleware provided by Next.js. Create or modify
+`middleware.ts` in your project root:
 
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/deployment) for more
-details.
+```typescript
+export { default } from 'next-auth/middleware';
+
+export const config = {
+  matcher: ['/protected/:path*'],
+};
+```
+
+## Environment Variables
+
+Required environment variables:
+
+- `NEXTAUTH_URL`: Your application URL
+- `NEXTAUTH_SECRET`: Secret key for session encryption
+- `DATABASE_URL`: Your database connection string
+
+## Docker Support
+
+Build the Docker image:
+
+```bash
+docker build -t nextjs-auth-template .
+```
+
+Run the container:
+
+```bash
+docker run -p 3000:3000 nextjs-auth-template
+```
+
+## Development
+
+```bash
+# Run development server
+bun dev
+
+# Run tests
+bun test
+
+# Build for production
+bun run build
+
+# Start production server
+bun start
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## Acknowledgments
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [NextAuth.js Documentation](https://next-auth.js.org)
+- [Bun Documentation](https://bun.sh)
+
+## Support
+
+For support, please open an issue in the repository or contact the maintainers.
